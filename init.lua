@@ -312,6 +312,9 @@ end
 
 local function main()
     dannet_connected()
+    for i, name in pairs(connected_list) do
+        if name == string.lower(mq.TLO.Me.DisplayName()) then combo_selected = i end
+    end
     while running == true do
         mq.delay(200)
         if action == "WAIT" then
