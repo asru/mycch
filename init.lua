@@ -276,29 +276,31 @@ local function displayGUI()
     openGUI, drawGUI = ImGui.Begin("Collector's Clearing House##" .. myName, openGUI, window_flags)
     if drawGUI then
         dannet_connected()
+        ImGui.PushItemWidth(150)
         combo_selected = ImGui.Combo('##Combo', combo_selected, connected_list)
-        if ImGui.Button("Store All Collectibles") then
+        ImGui.PopItemWidth()
+        if ImGui.Button("Store All Collectibles", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_STORE'
             else
                 mq.cmdf("/dex %s /lua run cch oneshot store", connected_list[combo_selected])
             end
         end
-        if ImGui.Button("Retrieve All Collectibles") then
+        if ImGui.Button("Retrieve All Collectibles", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_GET'
             else
                 mq.cmdf("/dex %s /lua run cch oneshot grab", connected_list[combo_selected])
             end
         end
-        if ImGui.Button("Collect and Return") then
+        if ImGui.Button("Collect and Return", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTH'
             else
                 mq.cmdf("/dex %s /lua run cch oneshot collecth", connected_list[combo_selected])
             end
         end
-        if ImGui.Button("Collect in Inventory") then
+        if ImGui.Button("Collect in Inventory", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTI'
             else
