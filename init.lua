@@ -279,12 +279,18 @@ local function displayGUI()
         ImGui.PushItemWidth(150)
         combo_selected = ImGui.Combo('##Combo', combo_selected, connected_list)
         ImGui.PopItemWidth()
+        if ImGui.IsItemHovered() then
+            ImGui.SetTooltip('Character to perform action')
+        end
         if ImGui.Button("Store All Collectibles", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_STORE'
             else
                 mq.cmdf("/dex %s /lua run cch oneshot store", connected_list[combo_selected])
             end
+        end
+        if ImGui.IsItemHovered() then
+            ImGui.SetTooltip('Store all collectibles in housing storage')
         end
         if ImGui.Button("Retrieve All Collectibles", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
@@ -293,12 +299,18 @@ local function displayGUI()
                 mq.cmdf("/dex %s /lua run cch oneshot grab", connected_list[combo_selected])
             end
         end
+        if ImGui.IsItemHovered() then
+            ImGui.SetTooltip('Retrieve all collectibles from housing storage')
+        end
         if ImGui.Button("Collect and Return", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTH'
             else
                 mq.cmdf("/dex %s /lua run cch oneshot collecth", connected_list[combo_selected])
             end
+        end
+        if ImGui.IsItemHovered() then
+            ImGui.SetTooltip('Collect items in housing storage (and return to storage)')
         end
         if ImGui.Button("Collect in Inventory", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
@@ -307,8 +319,10 @@ local function displayGUI()
                 mq.cmdf("/dex %s /lua run cch oneshot collecti", connected_list[combo_selected])
             end
         end
+        if ImGui.IsItemHovered() then
+            ImGui.SetTooltip('Collect collectibles in inventory')
+        end
     end
-
     ImGui.End()
 end
 
