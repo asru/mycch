@@ -104,7 +104,9 @@ local function collect_from_house()
     local count = 0
     open_windows()
     mq.delay('1s')
-    for i = 1, 1000 do
+    local i = 0
+    while true do
+        i = i + 1
         if not mq.TLO.Window('RealEstateItemsWnd').Child('REIW_ItemList').List(i, 2).Length() then break end
         if mq.TLO.Window('RealEstateItemsWnd').Child('REIW_ItemList').List(i, 3)() == 'V' then
             CheckItemName = mq.TLO.Window('RealEstateItemsWnd').Child('REIW_ItemList').List(i, 2)()
@@ -133,7 +135,7 @@ local function collect_from_house()
                         mq.cmd("/invoke ${Window[ItemDisplayWindow].DoClose}")
                         mq.cmdf("/nomodkey /itemnotify in pack%s %s rightmouseup", ItemSlot, ItemSlot2)
                         mq.delay("3s", check_item_count)
-                        if CheckItemQuantity == tostring(1) then
+                        if tonumber(CheckItemQuantity) == 1 then
                             i = i - 1
                         else
                             return_item_to_storage()
