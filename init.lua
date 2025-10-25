@@ -14,7 +14,7 @@ local window_flags = bit32.bor(ImGuiWindowFlags.AlwaysAutoResize)
 local openGUI, drawGUI = true, true
 local combo_selected = 1
 local connected_list = {}
-local cchheader = "\ay[\agCCH\ay]"
+local cchheader = "\ay[\agMYCCH\ay]"
 local action = "WAIT"
 
 
@@ -257,11 +257,11 @@ local function dannet_connected()
     end
 end
 
-local function cmd_cch(cmd)
+local function cmd_mycch(cmd)
     if cmd == nil or cmd == 'help' then
-        printf("%s \ar/cch exit \ao--- Exit script", cchheader)
-        printf("%s \ar/cchhide \ao--- Hide GUI", cchheader)
-        printf("%s \ar/cch show \ao--- Show GUI", cchheader)
+    printf("%s \ar/mycch exit \ao--- Exit script", cchheader)
+    printf("%s \ar/mycchhide \ao--- Hide GUI", cchheader)
+    printf("%s \ar/mycch show \ao--- Show GUI", cchheader)
     elseif cmd == 'exit' or cmd == 'quit' or cmd == 'stop' then
         running = false
     elseif cmd == 'show' then
@@ -269,7 +269,7 @@ local function cmd_cch(cmd)
     elseif cmd == 'hide' then
         openGUI = false
     else
-        printf("%s \arUnrecognized command.", cchheader)
+    printf("%s \arUnrecognized command.", cchheader)
     end
 end
 
@@ -288,7 +288,7 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_STORE'
             else
-                mq.cmdf("/dex %s /lua run cch oneshot store", connected_list[combo_selected])
+                mq.cmdf("/dex %s /lua run mycch oneshot store", connected_list[combo_selected])
             end
         end
         if ImGui.IsItemHovered() then
@@ -298,7 +298,7 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_GET'
             else
-                mq.cmdf("/dex %s /lua run cch oneshot grab", connected_list[combo_selected])
+                mq.cmdf("/dex %s /lua run mycch oneshot grab", connected_list[combo_selected])
             end
         end
         if ImGui.IsItemHovered() then
@@ -308,7 +308,7 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTH'
             else
-                mq.cmdf("/dex %s /lua run cch oneshot collecth", connected_list[combo_selected])
+                mq.cmdf("/dex %s /lua run mycch oneshot collecth", connected_list[combo_selected])
             end
         end
         if ImGui.IsItemHovered() then
@@ -318,7 +318,7 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTI'
             else
-                mq.cmdf("/dex %s /lua run cch oneshot collecti", connected_list[combo_selected])
+                mq.cmdf("/dex %s /lua run mycch oneshot collecti", connected_list[combo_selected])
             end
         end
         if ImGui.IsItemHovered() then
@@ -354,7 +354,7 @@ end
 
 if #arg == 0 then
     mq.imgui.init('displayGUI', displayGUI)
-    mq.bind('/cch', cmd_cch)
+    mq.bind('/mycch', cmd_mycch)
     main()
 elseif arg[1]:lower() == 'oneshot' then
     if arg[2]:lower() == "collecth" then
