@@ -16,6 +16,7 @@ local combo_selected = 1
 local connected_list = {}
 local cchheader = "\ay[\agMYCCH\ay]"
 local action = "WAIT"
+local DEBUG = false
 -- Remote action scheduler (to avoid blocking ImGui callbacks)
 local remote_task = nil -- {peer=string, oneshot=string, cooldown=integer}
 
@@ -299,8 +300,9 @@ local function displayGUI()
                 action = 'CALL_STORE'
             else
                 -- Queue remote stop->run sequence (no blocking delay in ImGui)
-                mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
+                mq.cmdf("/squelch /dex %s /lua stop mycch", connected_list[combo_selected])
                 remote_task = {peer = connected_list[combo_selected], oneshot = "store", cooldown = 3}
+                if DEBUG then printf("%s queued remote: %s -> %s", cchheader, connected_list[combo_selected], "store") end
             end
         end
         if ImGui.IsItemHovered() then
@@ -310,8 +312,9 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_GET'
             else
-                mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
+                mq.cmdf("/squelch /dex %s /lua stop mycch", connected_list[combo_selected])
                 remote_task = {peer = connected_list[combo_selected], oneshot = "grab", cooldown = 3}
+                if DEBUG then printf("%s queued remote: %s -> %s", cchheader, connected_list[combo_selected], "grab") end
             end
         end
         if ImGui.IsItemHovered() then
@@ -321,8 +324,9 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTH'
             else
-                mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
+                mq.cmdf("/squelch /dex %s /lua stop mycch", connected_list[combo_selected])
                 remote_task = {peer = connected_list[combo_selected], oneshot = "collecth", cooldown = 3}
+                if DEBUG then printf("%s queued remote: %s -> %s", cchheader, connected_list[combo_selected], "collecth") end
             end
         end
         if ImGui.IsItemHovered() then
@@ -332,8 +336,9 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTI'
             else
-                mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
+                mq.cmdf("/squelch /dex %s /lua stop mycch", connected_list[combo_selected])
                 remote_task = {peer = connected_list[combo_selected], oneshot = "collecti", cooldown = 3}
+                if DEBUG then printf("%s queued remote: %s -> %s", cchheader, connected_list[combo_selected], "collecti") end
             end
         end
         if ImGui.IsItemHovered() then
@@ -355,7 +360,8 @@ local function main()
             if remote_task.cooldown > 0 then
                 remote_task.cooldown = remote_task.cooldown - 1
             else
-                mq.cmdf("/dex %s /lua run mycch oneshot %s", remote_task.peer, remote_task.oneshot)
+                if DEBUG then printf("%s running remote oneshot: %s -> %s", cchheader, remote_task.peer, remote_task.oneshot) end
+                mq.cmdf("/squelch /dex %s /lua run mycch oneshot %s", remote_task.peer, remote_task.oneshot)
                 remote_task = nil
             end
         end
