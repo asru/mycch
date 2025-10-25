@@ -38,7 +38,7 @@ local function display_window_open()
 end
 
 local function check_item_count()
-    if mq.TLO.FindItemCount("=" .. CheckItemName)() ~= StartAmount then return true end
+    if tonumber(mq.TLO.FindItemCount("=" .. CheckItemName)() or 0) ~= StartAmount then return true end
     return false
 end
 
@@ -51,7 +51,7 @@ local function inventory_button_ready()
 end
 
 local function check_item_returned()
-    if not mq.TLO.FindItemCount("=" .. CheckItemName)() > 0 then return true end
+    if not (tonumber(mq.TLO.FindItemCount("=" .. CheckItemName)() or 0) > 0) then return true end
     return false
 end
 
@@ -59,7 +59,7 @@ local function return_item_to_storage()
     local loopcount = 1
     mq.cmdf("/nomodkey /itemnotify in pack%s %s leftmouseup", ItemSlot, ItemSlot2)
     mq.delay("5s", closet_button_ready)
-    while mq.TLO.FindItemCount("=" .. CheckItemName)() > 0 do
+    while tonumber(mq.TLO.FindItemCount("=" .. CheckItemName)() or 0) > 0 do
         if mq.TLO.Window("REIW_ItemsPage").Child("REIW_Move_Closet_Button").Enabled() then
             mq.cmd(
                 "/nomodkey /shift /notify RealEstateItemsWnd REIW_Move_Closet_Button leftmouseup")
