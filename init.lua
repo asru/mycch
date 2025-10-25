@@ -251,13 +251,15 @@ end
 
 local function dannet_connected()
     connected_list = {}
-    -- Always include self first
+    -- Always include self first (plain character name)
     table.insert(connected_list, myName:lower())
-    -- Then add DanNet peers
+    -- Then add DanNet peers, excluding any that match self
     local peers_list = mq.TLO.DanNet.Peers()
     for word in string.gmatch(peers_list, '([^|]+)') do
-        -- Avoid duplicates if self is already in peers
-        if word:lower() ~= myName:lower() then
+        -- Extract character name from "server_character" format
+        local charName = word:match("_(.+)$") or word
+        -- Skip if this peer is the same character (with or without server prefix)
+        if charName:lower() ~= myName:lower() and word:lower() ~= myName:lower() then
             table.insert(connected_list, word)
         end
     end
