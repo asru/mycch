@@ -251,9 +251,15 @@ end
 
 local function dannet_connected()
     connected_list = {}
+    -- Always include self first
+    table.insert(connected_list, myName:lower())
+    -- Then add DanNet peers
     local peers_list = mq.TLO.DanNet.Peers()
     for word in string.gmatch(peers_list, '([^|]+)') do
-        table.insert(connected_list, word)
+        -- Avoid duplicates if self is already in peers
+        if word:lower() ~= myName:lower() then
+            table.insert(connected_list, word)
+        end
     end
 end
 
