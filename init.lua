@@ -289,13 +289,24 @@ local function displayGUI()
     openGUI, drawGUI = ImGui.Begin("Collector's Clearing House##" .. myName, openGUI, window_flags)
     if drawGUI then
         dannet_connected()
-        ImGui.PushItemWidth(150)
+        local comboWidth = 150
+        local endWidth = 60
+        local spacing = ImGui.GetStyle().ItemSpacing.x
+        local rowWidth = comboWidth + spacing + endWidth
+        ImGui.PushItemWidth(comboWidth)
         combo_selected = ImGui.Combo('##Combo', combo_selected, connected_list)
         if ImGui.IsItemHovered() then
             ImGui.SetTooltip('Character to perform action')
         end
         ImGui.PopItemWidth()
-        if ImGui.Button("Store All Collectibles", ImVec2(200, 20)) then
+        ImGui.SameLine()
+        if ImGui.Button("End", ImVec2(endWidth, 22)) then
+            running = false
+        end
+        if ImGui.IsItemHovered() then
+            ImGui.SetTooltip('End mycch (exit)')
+        end
+        if ImGui.Button("Store All Collectibles", ImVec2(rowWidth, 22)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_STORE'
             else
@@ -308,7 +319,7 @@ local function displayGUI()
         if ImGui.IsItemHovered() then
             ImGui.SetTooltip('Store all collectibles in housing storage')
         end
-        if ImGui.Button("Retrieve All Collectibles", ImVec2(200, 20)) then
+    if ImGui.Button("Retrieve All Collectibles", ImVec2(rowWidth, 22)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_GET'
             else
@@ -320,7 +331,7 @@ local function displayGUI()
         if ImGui.IsItemHovered() then
             ImGui.SetTooltip('Retrieve all collectibles from housing storage')
         end
-        if ImGui.Button("Collect and Return", ImVec2(200, 20)) then
+    if ImGui.Button("Collect and Return", ImVec2(rowWidth, 22)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTH'
             else
@@ -332,7 +343,7 @@ local function displayGUI()
         if ImGui.IsItemHovered() then
             ImGui.SetTooltip('Collect items in housing storage (and return to storage)')
         end
-        if ImGui.Button("Collect in Inventory", ImVec2(200, 20)) then
+    if ImGui.Button("Collect in Inventory", ImVec2(rowWidth, 22)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTI'
             else
