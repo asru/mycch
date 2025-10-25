@@ -16,6 +16,8 @@ local combo_selected = 1
 local connected_list = {}
 local cchheader = "\ay[\agMYCCH\ay]"
 local action = "WAIT"
+-- Remote action scheduler (to avoid blocking ImGui callbacks)
+local remote_task = nil -- {peer=string, oneshot=string, cooldown=integer}
 
 
 if mq.TLO.Plugin('mq2dannet').IsLoaded() == false then
@@ -288,18 +290,17 @@ local function displayGUI()
         dannet_connected()
         ImGui.PushItemWidth(150)
         combo_selected = ImGui.Combo('##Combo', combo_selected, connected_list)
-        ImGui.PopItemWidth()
         if ImGui.IsItemHovered() then
             ImGui.SetTooltip('Character to perform action')
         end
+        ImGui.PopItemWidth()
         if ImGui.Button("Store All Collectibles", ImVec2(200, 20)) then
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_STORE'
             else
-                -- Ensure remote script is not already running, then start oneshot
+                -- Queue remote stop->run sequence (no blocking delay in ImGui)
                 mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
-                mq.delay('300')
-                mq.cmdf("/dex %s /lua run mycch oneshot store", connected_list[combo_selected])
+                remote_task = {peer = connected_list[combo_selected], oneshot = "store", cooldown = 3}
             end
         end
         if ImGui.IsItemHovered() then
@@ -310,8 +311,7 @@ local function displayGUI()
                 action = 'CALL_GET'
             else
                 mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
-                mq.delay('300')
-                mq.cmdf("/dex %s /lua run mycch oneshot grab", connected_list[combo_selected])
+                remote_task = {peer = connected_list[combo_selected], oneshot = "grab", cooldown = 3}
             end
         end
         if ImGui.IsItemHovered() then
@@ -322,8 +322,7 @@ local function displayGUI()
                 action = 'CALL_COLLECTH'
             else
                 mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
-                mq.delay('300')
-                mq.cmdf("/dex %s /lua run mycch oneshot collecth", connected_list[combo_selected])
+                remote_task = {peer = connected_list[combo_selected], oneshot = "collecth", cooldown = 3}
             end
         end
         if ImGui.IsItemHovered() then
@@ -334,8 +333,7 @@ local function displayGUI()
                 action = 'CALL_COLLECTI'
             else
                 mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
-                mq.delay('300')
-                mq.cmdf("/dex %s /lua run mycch oneshot collecti", connected_list[combo_selected])
+                remote_task = {peer = connected_list[combo_selected], oneshot = "collecti", cooldown = 3}
             end
         end
         if ImGui.IsItemHovered() then
@@ -352,6 +350,15 @@ local function main()
     end
     while running == true do
         mq.delay(200)
+        -- Remote scheduler: after a few ticks, send the oneshot to target
+        if remote_task ~= nil then
+            if remote_task.cooldown > 0 then
+                remote_task.cooldown = remote_task.cooldown - 1
+            else
+                mq.cmdf("/dex %s /lua run mycch oneshot %s", remote_task.peer, remote_task.oneshot)
+                remote_task = nil
+            end
+        end
         if action == "WAIT" then
         elseif action == "CALL_STORE" then
             store_in_house()
