@@ -296,6 +296,9 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_STORE'
             else
+                -- Ensure remote script is not already running, then start oneshot
+                mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
+                mq.delay('300')
                 mq.cmdf("/dex %s /lua run mycch oneshot store", connected_list[combo_selected])
             end
         end
@@ -306,6 +309,8 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_GET'
             else
+                mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
+                mq.delay('300')
                 mq.cmdf("/dex %s /lua run mycch oneshot grab", connected_list[combo_selected])
             end
         end
@@ -316,6 +321,8 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTH'
             else
+                mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
+                mq.delay('300')
                 mq.cmdf("/dex %s /lua run mycch oneshot collecth", connected_list[combo_selected])
             end
         end
@@ -326,6 +333,8 @@ local function displayGUI()
             if connected_list[combo_selected] == myName:lower() then
                 action = 'CALL_COLLECTI'
             else
+                mq.cmdf("/dex %s /lua stop mycch", connected_list[combo_selected])
+                mq.delay('300')
                 mq.cmdf("/dex %s /lua run mycch oneshot collecti", connected_list[combo_selected])
             end
         end
@@ -374,4 +383,7 @@ elseif arg[1]:lower() == 'oneshot' then
     elseif arg[2]:lower() == "grab" then
         get_all_from_house()
     end
+    -- Ensure oneshot invocations always terminate, even if no work was found
+    mq.delay(200)
+    mq.exit()
 end
